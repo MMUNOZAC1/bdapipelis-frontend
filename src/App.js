@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'; // 👈 AÑADIDO Navigate
 import { Navbar } from './Components/Navbar';
 import { DirectorView } from './Components/director/DirectorView';
 import { GeneroView } from './Components/genero/GeneroView';
@@ -13,6 +13,7 @@ function App() {
       <Navbar />
       <div className="container mt-4">
         <Routes>
+          <Route path="/" element={<Navigate to="/media" />} /> {/* 👈 RUTA AÑADIDA */}
           <Route path="/director" element={<DirectorView />} />
           <Route path="/genero" element={<GeneroView />} />
           <Route path="/media" element={<MediaView />} />

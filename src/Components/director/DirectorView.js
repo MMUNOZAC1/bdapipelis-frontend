@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createDirector, getDirectors, updateDirector } from '../../services/directorService';
 import Swal from 'sweetalert2';
-const moment = require('moment');
+import moment from 'moment';
 
 export const DirectorView = () => {
-  const [valuesForm, setValuesForm] = useState({});
+  const [valuesForm, setValuesForm] = useState({ nombres: '', estado: '' });
   const [directors, setDirectors] = useState([]);
   const [directorSelected, setDirectorSelected] = useState(null);
-  const { nombres = '', estado = '' } = valuesForm;
+
+  const { nombres, estado } = valuesForm;
 
   const listDirectors = async () => {
     try {
@@ -17,7 +18,7 @@ export const DirectorView = () => {
       setDirectors(resp.data);
       Swal.close();
     } catch (error) {
-      console.log(error);
+      console.error(error);
       Swal.close();
     }
   };
@@ -52,8 +53,9 @@ export const DirectorView = () => {
       listDirectors();
       Swal.close();
     } catch (error) {
-      console.log(error);
-      Swal.close();
+      console.error(error);
+      const mensaje = error.response?.data?.message || 'Error al guardar el director';
+      Swal.fire('Error', mensaje, 'error');
     }
   };
 

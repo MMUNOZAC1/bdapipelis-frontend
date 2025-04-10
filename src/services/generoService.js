@@ -4,6 +4,10 @@ const getGeneros = () => {
   return axiosInstance.get('genero');
 };
 
+const getGenerosActivos = () => {
+  return axiosInstance.get('genero/activos');
+};
+
 const createGenero = (data) => {
   return axiosInstance.post('genero', data);
 };
@@ -18,6 +22,7 @@ const deleteGenero = (nombre) => {
 
 export {
   getGeneros,
+  getGenerosActivos, // 👈 Esta es la nueva función
   createGenero,
   updateGenero,
   deleteGenero,

@@ -1,17 +1,28 @@
 import { axiosInstance } from '../helper/axios-config';
 
-export const getProductoras = async () => {
-  return await axiosInstance.get('/productora');
+// Obtener todas las productoras
+const getProductoras = () => {
+  return axiosInstance.get('/productora');
 };
 
-export const createProductora = async (data) => {
-  return await axiosInstance.post('/productora', data);
+// Crear una nueva productora
+const createProductora = (data) => {
+  return axiosInstance.post('/productora', data);
 };
 
-export const updateProductora = async (nombre, data) => {
-  return await axiosInstance.put(`/productora/${nombre}`, data);
+// Actualizar una productora por nombre
+const updateProductora = (nombre, data) => {
+  return axiosInstance.put(`/productora/${nombre}`, data);
 };
 
-export const deleteProductora = async (nombre) => {
-  return await axiosInstance.delete(`/productora/${nombre}`);
+// Eliminar una productora por nombre
+const deleteProductora = (nombre) => {
+  return axiosInstance.delete(`/productora/${nombre}`);
+};
+
+export {
+  getProductoras,
+  createProductora,
+  updateProductora,
+  deleteProductora
 };

@@ -1,28 +1,52 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { createMedia, getMedias, updateMedia, deleteMedia } from '../../services/mediaService';
+import { getGeneros } from '../../services/generoService';
+import { getDirectors } from '../../services/directorService';
+import { getProductoras } from '../../services/productoraService';
+import { getTipos } from '../../services/tipoService';
 import { MediaCard } from './MediaCard';
 import Swal from 'sweetalert2';
 import moment from 'moment';
 
 export const MediaView = () => {
   const [medias, setMedias] = useState([]);
+  const [generos, setGeneros] = useState([]);
+  const [directores, setDirectores] = useState([]);
+  const [productoras, setProductoras] = useState([]);
+  const [tipos, setTipos] = useState([]);
+
   const [formValues, setFormValues] = useState({
     serial: '', titulo: '', sinopsis: '', url: '', imagen: '',
     anioEstreno: '', genero: '', director: '', productora: '', tipo: ''
   });
+
   const [selectedSerial, setSelectedSerial] = useState(null);
   const [modoTabla, setModoTabla] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
-
-  const formRef = useRef(null); // 👈 Referencia al formulario
+  const formRef = useRef(null);
 
   const listarMedias = async () => {
     const resp = await getMedias();
     setMedias(resp.data);
   };
 
+  const cargarDatosRelacionados = async () => {
+    const [resGenero, resDirector, resProductora, resTipo] = await Promise.all([
+      getGeneros(),
+      getDirectors(),
+      getProductoras(),
+      getTipos()
+    ]);
+
+    setGeneros(resGenero.data.filter(g => g.estado === 'Activo'));
+    setDirectores(resDirector.data.filter(d => d.estado === 'Activo'));
+    setProductoras(resProductora.data.filter(p => p.estado === 'Activo'));
+    setTipos(resTipo.data.filter(t => t.estado === 'Activo'));
+  };
+
   useEffect(() => {
     listarMedias();
+    cargarDatosRelacionados();
   }, []);
 
   const handleChange = (e) => {
@@ -55,10 +79,9 @@ export const MediaView = () => {
     });
     setSelectedSerial(media.serial);
     setMostrarFormulario(true);
-
     setTimeout(() => {
       formRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100); // 👈 scroll suave
+    }, 100);
   };
 
   const handleDelete = async (serial) => {
@@ -89,10 +112,36 @@ export const MediaView = () => {
           <input name="url" value={formValues.url} onChange={handleChange} placeholder="URL" className="form-control mb-2" required />
           <input name="imagen" value={formValues.imagen} onChange={handleChange} placeholder="URL Imagen" className="form-control mb-2" />
           <input name="anioEstreno" type="number" value={formValues.anioEstreno} onChange={handleChange} placeholder="Año de estreno" className="form-control mb-2" required />
-          <input name="genero" value={formValues.genero} onChange={handleChange} placeholder="ID Género" className="form-control mb-2" required />
-          <input name="director" value={formValues.director} onChange={handleChange} placeholder="ID Director" className="form-control mb-2" required />
-          <input name="productora" value={formValues.productora} onChange={handleChange} placeholder="ID Productora" className="form-control mb-2" required />
-          <input name="tipo" value={formValues.tipo} onChange={handleChange} placeholder="ID Tipo" className="form-control mb-2" required />
+
+          {/* Selects dinámicos */}
+          <select name="genero" value={formValues.genero} onChange={handleChange} className="form-control mb-2" required>
+            <option value="">-- Seleccione Género --</option>
+            {generos.map(g => (
+              <option key={g._id} value={g._id}>{g.nombre}</option>
+            ))}
+          </select>
+
+          <select name="director" value={formValues.director} onChange={handleChange} className="form-control mb-2" required>
+            <option value="">-- Seleccione Director --</option>
+            {directores.map(d => (
+              <option key={d._id} value={d._id}>{d.nombres}</option>
+            ))}
+          </select>
+
+          <select name="productora" value={formValues.productora} onChange={handleChange} className="form-control mb-2" required>
+            <option value="">-- Seleccione Productora --</option>
+            {productoras.map(p => (
+              <option key={p._id} value={p._id}>{p.nombre}</option>
+            ))}
+          </select>
+
+          <select name="tipo" value={formValues.tipo} onChange={handleChange} className="form-control mb-2" required>
+            <option value="">-- Seleccione Tipo --</option>
+            {tipos.map(t => (
+              <option key={t._id} value={t._id}>{t.nombre}</option>
+            ))}
+          </select>
+
           <div className="d-flex gap-2">
             <button className="btn btn-primary" type="submit">Guardar</button>
             <button className="btn btn-secondary" type="button" onClick={() => {
